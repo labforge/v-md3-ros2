@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build_and_lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          path: ros2_ws/src/vmd3_radar_driver
+
+      - name: Set up ROS 2 Humble
+        run: |
+          sudo apt update
+          sudo apt install -y curl gnupg2 lsb-release
+          sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list'
+          sudo apt update 
+          sudo apt install -y python3-colcon-common-extensions \
+             python3-numpy \
+             python3-rosdep \
+             ros-humble-cv-bridge \
+             ros-humble-rclcpp-components \
+             ros-humble-rclpy \
+             ros-humble-std-msgs \
+             ros-humble-radar-msgs \
+             ros-humble-sensor-msgs \
+             ros-humble-vision-msgs \
+             ros-humble-visualization-msgs \
+             ros-humble-image-transport \
+             ros-humble-camera-calibration-parsers \
+             ros-humble-camera-info-manager \
+             ros-humble-launch-ros \
+             ros-humble-image-transport \
+             ros-humble-image-transport-plugins \
+             ros-humble-image-view \
+             build-essential libopencv-dev locales \
+             software-properties-common \
+             libcurl4-openssl-dev 
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          cd ros2_ws/src/vmd3_radar_driver/
+          python -m pip install --upgrade pip
+          pip install .
+          pip install pylint
+
+      - name: Run pylint
+        run: |
+          cd ros2_ws/src/
+          source /opt/ros/humble/setup.sh
+          cd vmd3_radar_driver/
+          pylint .
+
+      - name: Build ROS 2 workspace
+        run: |
+          cd ros2_ws
+          source /opt/ros/humble/setup.sh
+          sudo rosdep init
+          rosdep update --include-eol-distros
+          rosdep install -i --from-path src --rosdistro humble -y
+          colcon build
+
+      - name: Test ROS 2 package import
+        run: |
+          cd ros2_ws
+          source /opt/ros/humble/setup.sh
+          cd src/vmd3_radar_driver/
+          python -c "import vmd3_radar_driver"
