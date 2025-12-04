@@ -110,7 +110,6 @@ class VMD3RadarNode(Node):
                     self.publish_scan(data_type, received_data)
                 elif data_type == 'DONE':
                     self._frame_counter = received_data
-                    pass
             except (StopIteration, RuntimeError, OSError) as e:
                 self.publish_status(f'Error: {e}')
                 self.get_logger().error(f'Polling error: {e}')
@@ -192,4 +191,3 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
-

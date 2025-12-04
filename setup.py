@@ -19,16 +19,14 @@
 __author__ = "Thomas Reidemeister <thomas@labforge.ca>"
 __copyright__ = "Copyright 2025, Labforge Inc."
 
-from setuptools import find_packages, setup
 from glob import glob
 import os
-
 import warnings
 from pkg_resources import PkgResourcesDeprecationWarning
+from setuptools import find_packages, setup
 
 # Silences noisy warnings produced by system packages with non-PEP440 versions.
 warnings.filterwarnings("ignore", category=PkgResourcesDeprecationWarning)
-
 
 PACKAGE_NAME = 'vmd3_radar_driver'
 
