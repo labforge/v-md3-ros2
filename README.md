@@ -128,3 +128,13 @@ sudo apt install -y python3-colcon-common-extensions \
      software-properties-common \
      libcurl4-openssl-dev  
 ```
+ * Clone this repository into the `src` folder of your workspace and then build the workspace
+```bash
+# verbose build
+colcon build --event-handlers console_direct+ --symlink-install
+# resource the installed workspace
+source install/local_setup.sh
+# Run the driver with default arguments
+ros2 run vmd3_radar_driver driver
+# or via launch file (edit as needed)
+ros2 launch vmd3_radar_driver vmd3_radar_driver_launch.py
