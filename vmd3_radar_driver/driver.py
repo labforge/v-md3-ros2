@@ -71,52 +71,54 @@ class VMD3RadarNode(Node):
     def poll_radar(self):
         """Poll the radar for data and publish results to ROS topics."""
         self.get_logger().info("Starting radar polling thread")
-        # Group radar parameters into a dictionary to reduce local variables
-        params = {
-            'address': self.get_parameter('address').get_parameter_value().string_value,
-            'port': self.get_parameter('port').get_parameter_value().integer_value,
-            'rport': self.get_parameter('rport').get_parameter_value().integer_value,
-            'mode': self.get_parameter('mode').get_parameter_value().integer_value,
-            'sensitivity': self.get_parameter('sensitivity').get_parameter_value().integer_value,
-            'min_distance': self.get_parameter('min_distance').get_parameter_value().integer_value,
-            'max_distance': self.get_parameter('max_distance').get_parameter_value().integer_value,
-            'min_speed': self.get_parameter('min_speed').get_parameter_value().integer_value,
-            'max_speed': self.get_parameter('max_speed').get_parameter_value().integer_value,
-            'min_lifetime': self.get_parameter('min_lifetime').get_parameter_value().integer_value,
-            'max_lifetime': self.get_parameter('max_lifetime').get_parameter_value().integer_value,
-            'stationary': self.get_parameter('stationary').get_parameter_value().bool_value
-        }
 
-        try:
-            driver = VMD3Driver(params['address'], params['port'], params['rport'])
-            driver.mode(VMD3Modes(params['mode']))
-            driver.sensitivity(params['sensitivity'])
-            driver.minimum_detection_distance(params['min_distance'])
-            driver.maximum_detection_distance(params['max_distance'])
-            driver.minimum_detection_speed(params['min_speed'])
-            driver.maximum_detection_speed(params['max_speed'])
-            driver.minimum_lifetime(params['min_lifetime'])
-            driver.maximum_lifetime(params['max_lifetime'])
-            driver.enable_static_tracking(params['stationary'])
-            driver.stream_enable()
-            self.publish_status('Radar running')
-            self.get_logger().info("Radar initialized successfully")
-        except (ValueError, RuntimeError, OSError) as e:
-            self.publish_status(f'Error: {e}')
-            self.get_logger().error(f'Failed to initialize radar: {e}')
-            return
 
         while rclpy.ok() and self._running:
+            params = {
+                'address': self.get_parameter('address').get_parameter_value().string_value,
+                'port': self.get_parameter('port').get_parameter_value().integer_value,
+                'rport': self.get_parameter('rport').get_parameter_value().integer_value,
+                'mode': self.get_parameter('mode').get_parameter_value().integer_value,
+                'sensitivity': self.get_parameter('sensitivity').get_parameter_value().integer_value,
+                'min_distance': self.get_parameter('min_distance').get_parameter_value().integer_value,
+                'max_distance': self.get_parameter('max_distance').get_parameter_value().integer_value,
+                'min_speed': self.get_parameter('min_speed').get_parameter_value().integer_value,
+                'max_speed': self.get_parameter('max_speed').get_parameter_value().integer_value,
+                'min_lifetime': self.get_parameter('min_lifetime').get_parameter_value().integer_value,
+                'max_lifetime': self.get_parameter('max_lifetime').get_parameter_value().integer_value,
+                'stationary': self.get_parameter('stationary').get_parameter_value().bool_value
+            }
             try:
-                data_type, received_data = next(driver)
-                if data_type in ['PDAT', 'TDAT']:
-                    self.publish_scan(data_type, received_data)
-                elif data_type == 'DONE':
-                    self._frame_counter = received_data
-            except (StopIteration, RuntimeError, OSError) as e:
+                driver = VMD3Driver(params['address'], params['port'], params['rport'])
+                driver.mode(VMD3Modes(params['mode']))
+                driver.sensitivity(params['sensitivity'])
+                driver.minimum_detection_distance(params['min_distance'])
+                driver.maximum_detection_distance(params['max_distance'])
+                driver.minimum_detection_speed(params['min_speed'])
+                driver.maximum_detection_speed(params['max_speed'])
+                driver.minimum_lifetime(params['min_lifetime'])
+                driver.maximum_lifetime(params['max_lifetime'])
+                driver.enable_static_tracking(params['stationary'])
+                driver.stream_enable()
+                self.publish_status('Radar running')
+                self.get_logger().info("Radar initialized successfully")
+            except (ValueError, RuntimeError, OSError) as e:
                 self.publish_status(f'Error: {e}')
-                self.get_logger().error(f'Polling error: {e}')
-                time.sleep(1)
+                self.get_logger().error(f'Failed to initialize radar: {e} ... retrying in 5 seconds')
+                time.sleep(5)
+                continue
+
+            while rclpy.ok() and self._running:
+                try:
+                    data_type, received_data = next(driver)
+                    if data_type in ['PDAT', 'TDAT']:
+                        self.publish_scan(data_type, received_data)
+                    elif data_type == 'DONE':
+                        self._frame_counter = received_data
+                except (StopIteration, RuntimeError, OSError) as e:
+                    self.publish_status(f'Error: {e}')
+                    self.get_logger().error(f'Polling error: {e}')
+                    time.sleep(1)
 
     def publish_scan(self, data_type, received_data):
         """Publish radar scan and point cloud messages."""

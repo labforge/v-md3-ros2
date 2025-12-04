@@ -119,8 +119,11 @@ class VMD3Driver:
         :param tcp_port: TCP port number for the V-MD3 sensor.
         :param udp_port: UDP port number for receiving data from the V-MD3 sensor
         """
+        self._sock_udp = None
+        self._sock_tcp = None
         # Create TCP/IP socket
         self._sock_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock_tcp.settimeout(10)  # 10 second timeout
         self._sock_tcp.connect((tcp_ip, tcp_port))
 
         self._sock_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
@@ -303,8 +306,10 @@ class VMD3Driver:
             pass
 
         # Close connections
-        self._sock_udp.close()
-        self._sock_tcp.close()
+        if self._sock_udp is not None:
+            self._sock_udp.close()
+        if self._sock_udp is not None:
+            self._sock_tcp.close()
 
 if __name__ == '__main__':
     driver = VMD3Driver()

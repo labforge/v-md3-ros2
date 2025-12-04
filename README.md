@@ -50,7 +50,8 @@ The target can be configured to recognize and track targets with a configurable 
 ## Parameters
 
 The driver supports the following parameters for configuration. Note use the RFbeam V-MD3 utility to configure the 
-radar sensors `address` and `port` prior to running the driver.
+radar sensors `address` and `port` prior to running the driver. The exported parameters can be set via the launch file
+or `rqt_reconfigure` if the connection fails (they will only be applied on the successful restart of the driver).
 
 | Parameter Name | Type     | Description                                       | Default Value     |
 |----------------|----------|---------------------------------------------------|-------------------|
