@@ -26,6 +26,7 @@ jobs:
              python3-numpy \
              python3-rosdep \
              ros-humble-ament-cmake \
+             ros-humble-ament-cmake-python \
              ros-humble-cv-bridge \
              ros-humble-rclcpp-components \
              ros-humble-rclpy \
