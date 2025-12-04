@@ -19,6 +19,7 @@
 ROS2 driver interface node that publishes dummy radar data for testing.
 
 """
+# pylint: disable=duplicate-code
 __author__ = "Thomas Reidemeister <thomas@labforge.ca>"
 __copyright__ = "Copyright 2025, Labforge Inc."
 
