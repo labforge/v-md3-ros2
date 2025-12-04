@@ -40,6 +40,7 @@ class VMD3RadarNode(Node):
     def __init__(self):
         """Initialize the VMD3RadarNode and its publishers, parameters, and polling thread."""
         super().__init__('vmd3_radar_driver')
+        self.get_logger().info("Initializing VMD3RadarNode")
         # Declare parameters with defaults from README
         self.declare_parameter('address', '192.168.100.201')
         self.declare_parameter('port', 6172)
@@ -69,6 +70,7 @@ class VMD3RadarNode(Node):
 
     def poll_radar(self):
         """Poll the radar for data and publish results to ROS topics."""
+        self.get_logger().info("Starting radar polling thread")
         # Group radar parameters into a dictionary to reduce local variables
         params = {
             'address': self.get_parameter('address').get_parameter_value().string_value,
@@ -98,6 +100,7 @@ class VMD3RadarNode(Node):
             driver.enable_static_tracking(params['stationary'])
             driver.stream_enable()
             self.publish_status('Radar running')
+            self.get_logger().info("Radar initialized successfully")
         except (ValueError, RuntimeError, OSError) as e:
             self.publish_status(f'Error: {e}')
             self.get_logger().error(f'Failed to initialize radar: {e}')
@@ -117,6 +120,7 @@ class VMD3RadarNode(Node):
 
     def publish_scan(self, data_type, received_data):
         """Publish radar scan and point cloud messages."""
+        self.get_logger().info(f"Publishing scan data of type {data_type}")
         radar_scan = RadarScan()
         radar_scan.header.stamp = self.get_clock().now().to_msg()
         radar_scan.header.frame_id = 'radar_link'
@@ -170,12 +174,14 @@ class VMD3RadarNode(Node):
 
     def publish_status(self, status):
         """Publish a status message to the /vmd3/status topic."""
+        self.get_logger().info(f"Publishing status: {status}")
         msg = String()
         msg.data = status
         self._status_pub.publish(msg)
 
     def destroy_node(self):
         """Clean up the node and stop polling."""
+        self.get_logger().info("Destroying VMD3RadarNode")
         self._running = False
         super().destroy_node()
 
@@ -185,9 +191,10 @@ def main(args=None):
     rclpy.init(args=args)
     node = VMD3RadarNode()
     try:
+        node.get_logger().info("Spinning VMD3RadarNode")
         rclpy.spin(node)
     except KeyboardInterrupt:
-        pass
+        node.get_logger().info("KeyboardInterrupt received, shutting down")
     finally:
         node.destroy_node()
         rclpy.shutdown()
