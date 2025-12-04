@@ -71,7 +71,6 @@ jobs:
           source /opt/ros/humble/setup.sh
           sudo rosdep init
           rosdep update --include-eol-distros
-          rosdep install -i --from-path src --rosdistro humble -y
           colcon build --event-handlers console_direct+ --symlink-install
 
       - name: Test ROS 2 package import
