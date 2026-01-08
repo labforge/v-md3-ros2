@@ -148,7 +148,8 @@ class VMD3RadarNode(Node):
     def create_pointcloud(self, detections):
         """Convert radar detections to a PointCloud2 message."""
         points = [(det.distance_cm/100.0 * np.cos(det.azimuth_rad) * np.cos(det.elevation_rad),
-                   det.distance_cm/100.0 * np.sin(det.azimuth_rad) * np.cos(det.elevation_rad),
+                   # Note azimuth is negated to convert from radar to ROS coordinate frame
+                   det.distance_cm/100.0 * np.sin(-det.azimuth_rad) * np.cos(det.elevation_rad),
                    det.distance_cm/100.0 * np.sin(det.elevation_rad)) for det in detections]
         if not points:
             points = [(0.0, 0.0, 0.0)]
