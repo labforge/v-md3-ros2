@@ -133,7 +133,7 @@ class VMD3RadarNode(Node):
             radar_return.azimuth = det.azimuth_rad
             radar_return.elevation = det.elevation_rad
             radar_return.doppler_velocity = det.speed_kmh / 3.6  # km/h to m/s
-            radar_return.amplitude = det.magnitude
+            radar_return.amplitude = float(det.magnitude)
             radar_scan.returns.append(radar_return)
         if data_type == 'TDAT':
             self._target_pub.publish(radar_scan)
