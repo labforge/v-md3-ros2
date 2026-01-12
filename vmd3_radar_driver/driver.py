@@ -150,13 +150,15 @@ class VMD3RadarNode(Node):
         points = [(det.distance_cm/100.0 * np.cos(det.azimuth_rad) * np.cos(det.elevation_rad),
                    # Note azimuth is negated to convert from radar to ROS coordinate frame
                    det.distance_cm/100.0 * np.sin(-det.azimuth_rad) * np.cos(det.elevation_rad),
-                   det.distance_cm/100.0 * np.sin(det.elevation_rad)) for det in detections]
+                   det.distance_cm/100.0 * np.sin(det.elevation_rad),
+                   float(det.magnitude)) for det in detections]
         if not points:
-            points = [(0.0, 0.0, 0.0)]
+            points = [(0.0, 0.0, 0.0, 0.0)]
         fields = [
             PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
             PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
             PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+            PointField(name='mag', offset=12, datatype=PointField.FLOAT32, count=1),
         ]
         point_data = np.array(points, dtype=np.float32).tobytes()
         header = Header()
@@ -170,7 +172,7 @@ class VMD3RadarNode(Node):
             is_bigendian=False,
             fields=fields,
             point_step=12,
-            row_step=12*len(points),
+            row_step=16*len(points),
             data=point_data
         )
         return msg
