@@ -160,6 +160,7 @@ class VMD3RadarNode(Node):
             PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
             PointField(name='mag', offset=12, datatype=PointField.FLOAT32, count=1),
         ]
+        field_size = 4*4 # 4 fields, each 4 bytes (FLOAT32)
         point_data = np.array(points, dtype=np.float32).tobytes()
         header = Header()
         header.stamp = self.get_clock().now().to_msg()
@@ -171,8 +172,8 @@ class VMD3RadarNode(Node):
             is_dense=True,
             is_bigendian=False,
             fields=fields,
-            point_step=12,
-            row_step=16*len(points),
+            point_step=field_size,
+            row_step=field_size*len(points),
             data=point_data
         )
         return msg
