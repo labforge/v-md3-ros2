@@ -44,7 +44,7 @@ def generate_launch_description():
                 {'address': '192.168.1.201'},
                 {'sensitivity': 3},
                 {'mode': 6},
-                {'stationary' : true},
+                {'stationary' : True},
             ],
         ),
     ])
