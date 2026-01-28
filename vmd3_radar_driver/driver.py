@@ -56,12 +56,12 @@ class VMD3RadarNode(Node):
         self.declare_parameter('stationary', False)
 
         # Publishers
-        self._raw_pub = self.create_publisher(RadarScan, '/vmd3/detections', 10)
-        self._target_pub = self.create_publisher(RadarScan, '/vmd3/targets', 10)
-        self._raw_pub_pcl = self.create_publisher(PointCloud2, '/vmd3/detections_pcl', 10)
-        self._target_pub_pcl = self.create_publisher(PointCloud2, '/vmd3/targets_pcl', 10)
-        self._frame_id_pub = self.create_publisher(Int32, '/vmd3/frame_id', 10)
-        self._status_pub = self.create_publisher(String, '/vmd3/status', 10)
+        self._raw_pub = self.create_publisher(RadarScan, 'detections', 10)
+        self._target_pub = self.create_publisher(RadarScan, 'targets', 10)
+        self._raw_pub_pcl = self.create_publisher(PointCloud2, 'detections_pcl', 10)
+        self._target_pub_pcl = self.create_publisher(PointCloud2, 'targets_pcl', 10)
+        self._frame_id_pub = self.create_publisher(Int32, 'frame_id', 10)
+        self._status_pub = self.create_publisher(String, 'status', 10)
 
         self._frame_counter = 0
         self._running = True

@@ -25,6 +25,9 @@ __copyright__ = "Copyright 2025, Labforge Inc."
 from launch_ros.actions import Node
 from launch import LaunchDescription
 
+# FIXME: Eventually parameterize this
+SNOWFLEA_NAMESPACE = 'snowflea1'
+
 def generate_launch_description():
     """
     Launch the VMD3 radar driver node.
@@ -34,11 +37,14 @@ def generate_launch_description():
             package='vmd3_radar_driver',
             executable='driver',
             name='vmd3_radar_node',
+            namespace=f'{SNOWFLEA_NAMESPACE}/vmd3',
             output='screen',
-            # Example: Pass parameters declared in your driver.py file
+
             parameters=[
-                {'address': '192.168.100.201'},
-                {'sensitivity': 14},
+                {'address': '192.168.1.201'},
+                {'sensitivity': 3},
+                {'mode': 6},
+                {'stationary' : true},
             ],
         ),
     ])
