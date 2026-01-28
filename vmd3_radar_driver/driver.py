@@ -153,14 +153,15 @@ class VMD3RadarNode(Node):
                    det.distance_cm/100.0 * np.sin(det.elevation_rad),
                    float(det.magnitude)) for det in detections]
         if not points:
-            points = [(0.0, 0.0, 0.0, 0.0)]
+            points = [(0.0, 0.0, 0.0, 0.0, 0.0)]
         fields = [
             PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
             PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
             PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
             PointField(name='mag', offset=12, datatype=PointField.FLOAT32, count=1),
+            PointField(name='v', offset=16, datatype=PointField.FLOAT32, count=1),
         ]
-        field_size = 4*4 # 4 fields, each 4 bytes (FLOAT32)
+        field_size = 4*5 # 4 fields, each 4 bytes (FLOAT32)
         point_data = np.array(points, dtype=np.float32).tobytes()
         header = Header()
         header.stamp = self.get_clock().now().to_msg()

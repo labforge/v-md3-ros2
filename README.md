@@ -19,6 +19,7 @@ data rows.
 | Azimuth (deg) * 100   | `int16`  | Horizontal angle       |
 | Elevation (deg) * 100 | `int16`  | Vertical angle         |
 | Magnitude             | `uint16` | Signal strength        |
+| Doppler Velocity      | `uint16` | Velocity in km/h       |
 
 The radar can be configured into the following modes.
 
@@ -71,12 +72,12 @@ or `rqt_reconfigure` if the connection fails (they will only be applied on the s
 ## Published Topics
 The driver publishes the following topics:
 
- * `/vmd3/detections` ([RadarScan](https://github.com/ros-perception/radar_msgs/blob/ros2/msg/RadarScan.msg)): Publishes the raw radar scan data.
- * `/vmd3/targets` ([RadarScan](https://github.com/ros-perception/radar_msgs/blob/ros2/msg/RadarScan.msg)): Publishes the target scan data.
- * `/vmd3/detections_pcl` ([PointCloud2](https://docs.ros.org/en/humble/p/sensor_msgs/msg/PointCloud2.html)): Converts the raw radar scan data to point cloud format.
- * `/vmd3/targets_pcl` ([PointCloud2](https://docs.ros.org/en/humble/p/sensor_msgs/msg/PointCloud2.html)): Converts the target scan data to point cloud format.
- * `/vmd3/frame_id` ([std_msgs/Int32](https://docs.ros.org/en/humble/api/std_msgs/msg/Int32.html)): Publishes the current frame ID of the radar data.
- * `/vmd3/status` ([std_msgs/String](https://docs.ros.org/en/humble/api/std_msgs/msg/String.html)): Publishes status messages from the radar driver.
+ * `detections` ([RadarScan](https://github.com/ros-perception/radar_msgs/blob/ros2/msg/RadarScan.msg)): Publishes the raw radar scan data.
+ * `targets` ([RadarScan](https://github.com/ros-perception/radar_msgs/blob/ros2/msg/RadarScan.msg)): Publishes the target scan data.
+ * `detections_pcl` ([PointCloud2](https://docs.ros.org/en/humble/p/sensor_msgs/msg/PointCloud2.html)): Converts the raw radar scan data to point cloud format.
+ * `targets_pcl` ([PointCloud2](https://docs.ros.org/en/humble/p/sensor_msgs/msg/PointCloud2.html)): Converts the target scan data to point cloud format.
+ * `frame_id` ([std_msgs/Int32](https://docs.ros.org/en/humble/api/std_msgs/msg/Int32.html)): Publishes the current frame ID of the radar data.
+ * `status` ([std_msgs/String](https://docs.ros.org/en/humble/api/std_msgs/msg/String.html)): Publishes status messages from the radar driver.
 
 As soon as a valid connection to the radar sensor is established, the driver starts publishing the radar data, or update
 the status topic in case of errors.

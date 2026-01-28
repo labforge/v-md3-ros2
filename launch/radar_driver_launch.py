@@ -42,8 +42,8 @@ def generate_launch_description():
 
             parameters=[
                 {'address': '192.168.1.201'},
-                {'sensitivity': 3},
-                {'mode': 6},
+                {'sensitivity': 15}, # Maximum sensitivity
+                {'mode': 6},         # Mode 7 in datasheet (since API is zero indexed, p18)
                 {'stationary' : True},
             ],
         ),
