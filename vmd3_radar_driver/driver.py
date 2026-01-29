@@ -132,11 +132,9 @@ class VMD3RadarNode(Node):
         self.get_logger().info(f"Publishing scan data of type {data_type}")
         radar_scan = RadarScan()
         # Use the packet_timestamp for the header
-        ros_time = self.get_clock().now()
-        if packet_timestamp is not None:
-            secs = int(packet_timestamp)
-            nsecs = int((packet_timestamp - secs) * 1e9)
-            ros_time = rclpy.time.Time(seconds=secs, nanoseconds=nsecs, clock_type=self.get_clock().clock_type)
+        secs = int(packet_timestamp)
+        nsecs = int((packet_timestamp - secs) * 1e9)
+        ros_time = rclpy.time.Time(seconds=secs, nanoseconds=nsecs, clock_type=self.get_clock().clock_type)
         radar_scan.header.stamp = ros_time.to_msg()
         radar_scan.header.frame_id = 'radar_link'
         radar_scan.returns = []
@@ -158,7 +156,7 @@ class VMD3RadarNode(Node):
         frame_id_msg.data = self._frame_counter
         self._frame_id_pub.publish(frame_id_msg)
 
-    def create_pointcloud(self, detections):
+    def create_pointcloud(self, detections, ros_time):
         """Convert radar detections to a PointCloud2 message."""
         points = [(det.distance_cm/100.0 * np.cos(det.azimuth_rad) * np.cos(det.elevation_rad),
                    # Note azimuth is negated to convert from radar to ROS coordinate frame
@@ -177,7 +175,7 @@ class VMD3RadarNode(Node):
         field_size = 4*5 # 4 fields, each 4 bytes (FLOAT32)
         point_data = np.array(points, dtype=np.float32).tobytes()
         header = Header()
-        header.stamp = self.get_clock().now().to_msg()
+        header.stamp = ros_time.to_msg()
         header.frame_id = 'radar_link'
         msg = PointCloud2(
             header=header,
