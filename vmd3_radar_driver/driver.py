@@ -65,7 +65,7 @@ class VMD3RadarNode(Node):
         self._frame_id_pub = self.create_publisher(Int32, 'frame_id', 10)
         self._status_pub = self.create_publisher(String, 'status', 10)
 
-        self._frame_counter = 0
+        self._frame_counter = None
         self._running = True
         self._thread = threading.Thread(target=self.poll_radar, daemon=True)
         self._thread.start()
