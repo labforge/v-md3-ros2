@@ -26,6 +26,7 @@ import socket
 import math
 import enum
 import time
+import struct
 from collections import namedtuple
 import threading
 import queue
