@@ -203,6 +203,7 @@ class VMD3RadarNode(Node):
         """Clean up the node and stop polling."""
         self.get_logger().info("Destroying VMD3RadarNode")
         self._running = False
+        self._thread.join()
         super().destroy_node()
 
 
