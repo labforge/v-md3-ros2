@@ -27,6 +27,8 @@ import math
 import enum
 import time
 from collections import namedtuple
+import threading
+import queue
 
 class VMD3Modes(enum.Enum):
     """
@@ -134,6 +136,22 @@ class VMD3Driver:
         # Initialize connection with sensor
         cmd_frame = self.command("INIT", b'')
         self._sock_tcp.send(cmd_frame)
+
+        self._udp_queue = queue.Queue(maxsize=100)
+        self._receiver_running = True
+        self._receiver_thread = threading.Thread(target=self._udp_receiver, daemon=True)
+        self._receiver_thread.start()
+
+    def _udp_receiver(self):
+        import time
+        packet_length = 1500
+        while self._receiver_running:
+            try:
+                packet, _ = self._sock_udp.recvfrom(packet_length)
+                packet_timestamp = time.time()
+                self._udp_queue.put((packet, packet_timestamp))
+            except Exception:
+                continue
 
     def check_send(self, command: bytes):
         """
@@ -291,22 +309,17 @@ class VMD3Driver:
         return None
 
     def __next__(self):
-        # readout PDAT and TDAT data
-        packet_length = 1500
-
-        # GET PDAT DATA ---------------------------------
-        packet, _ = self._sock_udp.recvfrom(packet_length)
-        packet_timestamp = time.time()  # Capture timestamp immediately after receiving
-        result = self.decode_packet(packet)
-        while result is None:  # do while header isn't expected header
-            packet, _ = self._sock_udp.recvfrom(packet_length)
-            packet_timestamp = time.time()  # Update timestamp for each new packet
+        # Pull from the queue, blocking if empty
+        while True:
+            packet, packet_timestamp = self._udp_queue.get()
             result = self.decode_packet(packet)
-
-        # Return result and timestamp
-        return (*result, packet_timestamp)
+            if result is not None:
+                return (*result, packet_timestamp)
 
     def __del__(self):
+        self._receiver_running = False
+        self._receiver_thread.join(timeout=1)
+
         # Disconnect from sensor
         cmd_frame = self.command("GBYE", b'')
         try:
