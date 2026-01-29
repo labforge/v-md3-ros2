@@ -236,13 +236,18 @@ class VMD3Driver:
         cmd_frame = self.command("TDLT", lifetime_payload)
         self.check_send(cmd_frame)
 
-    def stream_enable(self):
+    def stream_enable(self, pdat=True, tdat=True):
         """
         Enable streaming of PDAT and TDAT data.
         """
         # Enable PDAT and TDAT data
         # 0x10 = TDAT, 0x08 = PDAT, 0x20 = DONE
-        cmd_frame = self.command("RDOT", (0x10|0x08|0x20).to_bytes(4, byteorder='little'))
+        value = 0x20
+        if pdat:
+            value |= 0x08
+        if tdat:
+            value |= 0x10
+        cmd_frame = self.command("RDOT", value.to_bytes(4, byteorder='little'))
         self._sock_tcp.send(cmd_frame)
         resp_frame = self.recv_msg(self._sock_tcp, 9, 8)
         res = VMD3Errors(resp_frame[8])

@@ -54,6 +54,8 @@ class VMD3RadarNode(Node):
         self.declare_parameter('min_lifetime', 5)
         self.declare_parameter('max_lifetime', 100)
         self.declare_parameter('stationary', False)
+        self.declare_parameter('raw_detections', True)
+        self.declare_parameter('target_detections', True)
 
         # Publishers
         self._raw_pub = self.create_publisher(RadarScan, 'detections', 10)
@@ -86,7 +88,9 @@ class VMD3RadarNode(Node):
                 'max_speed': self.get_parameter('max_speed').get_parameter_value().integer_value,
                 'min_lifetime': self.get_parameter('min_lifetime').get_parameter_value().integer_value,
                 'max_lifetime': self.get_parameter('max_lifetime').get_parameter_value().integer_value,
-                'stationary': self.get_parameter('stationary').get_parameter_value().bool_value
+                'stationary': self.get_parameter('stationary').get_parameter_value().bool_value,
+                'raw_detections': self.get_parameter('raw_detections').get_parameter_value().bool_value,
+                'target_detections': self.get_parameter('target_detections').get_parameter_value().bool_value,
             }
             try:
                 driver = VMD3Driver(params['address'], params['port'], params['rport'])
@@ -99,7 +103,7 @@ class VMD3RadarNode(Node):
                 driver.minimum_lifetime(params['min_lifetime'])
                 driver.maximum_lifetime(params['max_lifetime'])
                 driver.enable_static_tracking(params['stationary'])
-                driver.stream_enable()
+                driver.stream_enable(params['raw_detections'], params['target_detections'])
                 self.publish_status('Radar running')
                 self.get_logger().info("Radar initialized successfully")
             except (ValueError, RuntimeError, OSError) as e:
