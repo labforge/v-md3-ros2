@@ -72,11 +72,10 @@ or `rqt_reconfigure` if the connection fails (they will only be applied on the s
 ## Published Topics
 The driver publishes the following topics:
 
- * `detections` ([RadarScan](https://github.com/ros-perception/radar_msgs/blob/ros2/msg/RadarScan.msg)): Publishes the raw radar scan data.
- * `targets` ([RadarScan](https://github.com/ros-perception/radar_msgs/blob/ros2/msg/RadarScan.msg)): Publishes the target scan data.
- * `detections_pcl` ([PointCloud2](https://docs.ros.org/en/humble/p/sensor_msgs/msg/PointCloud2.html)): Converts the raw radar scan data to point cloud format.
- * `targets_pcl` ([PointCloud2](https://docs.ros.org/en/humble/p/sensor_msgs/msg/PointCloud2.html)): Converts the target scan data to point cloud format.
- * `frame_id` ([std_msgs/Int32](https://docs.ros.org/en/humble/api/std_msgs/msg/Int32.html)): Publishes the current frame ID of the radar data.
+ * `detections` ([RadarScan](https://github.com/ros-perception/radar_msgs/blob/ros2/msg/RadarScan.msg)): Publishes the raw radar scan data (if enabled).
+ * `targets` ([RadarScan](https://github.com/ros-perception/radar_msgs/blob/ros2/msg/RadarScan.msg)): Publishes the target scan data (if enabled).
+ * `detections_pcl` ([PointCloud2](https://docs.ros.org/en/humble/p/sensor_msgs/msg/PointCloud2.html)): Converts the raw radar scan data to point cloud format (if enabled).
+ * `targets_pcl` ([PointCloud2](https://docs.ros.org/en/humble/p/sensor_msgs/msg/PointCloud2.html)): Converts the target scan data to point cloud format (if enabled)
  * `status` ([std_msgs/String](https://docs.ros.org/en/humble/api/std_msgs/msg/String.html)): Publishes status messages from the radar driver.
 
 As soon as a valid connection to the radar sensor is established, the driver starts publishing the radar data, or update

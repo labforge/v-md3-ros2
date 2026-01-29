@@ -278,7 +278,7 @@ class VMD3Driver:
         """
         # Enable PDAT and TDAT data
         # 0x10 = TDAT, 0x08 = PDAT, 0x20 = DONE
-        value = 0x20
+        value = 0 # 0x20 disable done to really rule out any packet issues
         if pdat:
             value |= 0x08
         if tdat:

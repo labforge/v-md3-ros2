@@ -62,10 +62,10 @@ class VMD3RadarNode(Node):
         self._target_pub = self.create_publisher(RadarScan, 'targets', 10)
         self._raw_pub_pcl = self.create_publisher(PointCloud2, 'detections_pcl', 10)
         self._target_pub_pcl = self.create_publisher(PointCloud2, 'targets_pcl', 10)
-        self._frame_id_pub = self.create_publisher(Int32, 'frame_id', 10)
+        #self._frame_id_pub = self.create_publisher(Int32, 'frame_id', 10)
         self._status_pub = self.create_publisher(String, 'status', 10)
 
-        self._frame_counter = 0
+        #self._frame_counter = 0
         self._running = True
         self._thread = threading.Thread(target=self.poll_radar, daemon=True)
         self._thread.start()
@@ -117,11 +117,11 @@ class VMD3RadarNode(Node):
                     data_type, received_data, packet_timestamp = next(driver)
                     if data_type in ['PDAT', 'TDAT']:
                         self.publish_scan(data_type, received_data, packet_timestamp)
-                    elif data_type == 'DONE':
-                        if self._frame_counter != 0 and received_data != self._frame_counter + 1:
-                            self.get_logger().warn(f"Missed frame(s): expected {self._frame_counter + 1}, "
-                                                   f"got {received_data}")
-                        self._frame_counter = received_data
+                    # elif data_type == 'DONE':
+                    #     if self._frame_counter != 0 and received_data != self._frame_counter + 1:
+                    #         self.get_logger().warn(f"Missed frame(s): expected {self._frame_counter + 1}, "
+                    #                                f"got {received_data}")
+                    #     self._frame_counter = received_data
                 except (StopIteration, RuntimeError, OSError) as e:
                     self.publish_status(f'Error: {e}')
                     self.get_logger().error(f'Polling error: {e}')
@@ -152,9 +152,9 @@ class VMD3RadarNode(Node):
         else:
             self._raw_pub.publish(radar_scan)
             self._raw_pub_pcl.publish(self.create_pointcloud(received_data, ros_time))
-        frame_id_msg = Int32()
-        frame_id_msg.data = self._frame_counter
-        self._frame_id_pub.publish(frame_id_msg)
+        # frame_id_msg = Int32()
+        # frame_id_msg.data = self._frame_counter
+        # self._frame_id_pub.publish(frame_id_msg)
 
     def create_pointcloud(self, detections, ros_time):
         """Convert radar detections to a PointCloud2 message."""
