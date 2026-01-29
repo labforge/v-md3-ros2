@@ -167,6 +167,8 @@ class VMD3Driver:
 
                 self._udp_queue.put((packet, packet_timestamp))
             except Exception:
+                import traceback
+                traceback.print_exc()
                 continue
 
     def check_send(self, command: bytes):
