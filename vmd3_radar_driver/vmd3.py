@@ -156,18 +156,14 @@ class VMD3Driver:
         packet_length = 1500
         while self._receiver_running:
             try:
+                #packet, _ = self._sock_udp.recvfrom(packet_length)
                 packet, ancdata, flags, addr = self._sock_udp.recvmsg(packet_length, 1024)
                 packet_timestamp = time.time() # Fallback timestamp
                 for cmsg_level, cmsg_type, cmsg_data in ancdata:
                     print("cmsg_level:", cmsg_level, cmsg_level==socket.SOL_SOCKET, "cmsg_type:", cmsg_type, cmsg_type==SO_TIMESTAMP)
                     if cmsg_level == socket.SOL_SOCKET and cmsg_type == SO_TIMESTAMP:
                         tv_sec, tv_usec = struct.unpack('ll', cmsg_data)
-                        old_time = packet_timestamp
-                        print("System time", old_time)
                         packet_timestamp = tv_sec + tv_usec / 1e6 # Packet receive timestamp
-                        print("PKT Timestamp:", packet_timestamp)
-                        print("Delta:", old_time - packet_timestamp)
-                #packet, _ = self._sock_udp.recvfrom(packet_length)
 
                 self._udp_queue.put((packet, packet_timestamp))
             except Exception:
