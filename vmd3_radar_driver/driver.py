@@ -118,6 +118,9 @@ class VMD3RadarNode(Node):
                     if data_type in ['PDAT', 'TDAT']:
                         self.publish_scan(data_type, received_data, packet_timestamp)
                     elif data_type == 'DONE':
+                        if self._frame_counter is not None and received_data != self._frame_counter + 1:
+                            self.get_logger().warn(f"Missed frame(s): expected {self._frame_counter + 1}, "
+                                                   f"got {received_data}")
                         self._frame_counter = received_data
                 except (StopIteration, RuntimeError, OSError) as e:
                     self.publish_status(f'Error: {e}')
