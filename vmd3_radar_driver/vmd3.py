@@ -160,7 +160,6 @@ class VMD3Driver:
                 packet, ancdata, flags, addr = self._sock_udp.recvmsg(packet_length, 1024)
                 packet_timestamp = time.time() # Fallback timestamp
                 for cmsg_level, cmsg_type, cmsg_data in ancdata:
-                    print("cmsg_level:", cmsg_level, cmsg_level==socket.SOL_SOCKET, "cmsg_type:", cmsg_type, cmsg_type==SO_TIMESTAMP)
                     if cmsg_level == socket.SOL_SOCKET and cmsg_type == SO_TIMESTAMP:
                         tv_sec, tv_usec = struct.unpack('ll', cmsg_data)
                         packet_timestamp = tv_sec + tv_usec / 1e6 # Packet receive timestamp
