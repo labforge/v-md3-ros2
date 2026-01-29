@@ -65,7 +65,7 @@ class VMD3RadarNode(Node):
         self._frame_id_pub = self.create_publisher(Int32, 'frame_id', 10)
         self._status_pub = self.create_publisher(String, 'status', 10)
 
-        self._frame_counter = None
+        self._frame_counter = 0
         self._running = True
         self._thread = threading.Thread(target=self.poll_radar, daemon=True)
         self._thread.start()
@@ -118,7 +118,7 @@ class VMD3RadarNode(Node):
                     if data_type in ['PDAT', 'TDAT']:
                         self.publish_scan(data_type, received_data, packet_timestamp)
                     elif data_type == 'DONE':
-                        if self._frame_counter is not None and received_data != self._frame_counter + 1:
+                        if self._frame_counter != 0 and received_data != self._frame_counter + 1:
                             self.get_logger().warn(f"Missed frame(s): expected {self._frame_counter + 1}, "
                                                    f"got {received_data}")
                         self._frame_counter = received_data
