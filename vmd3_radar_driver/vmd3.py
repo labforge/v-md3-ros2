@@ -26,6 +26,7 @@ import socket
 import math
 import enum
 import time
+import struct
 from collections import namedtuple
 import threading
 import queue
@@ -139,6 +140,7 @@ class VMD3Driver:
         self._sock_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
         local_ip = self._sock_tcp.getsockname()[0]
         self._sock_udp.bind((local_ip, udp_port))
+        self._sock_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._sock_udp.setsockopt(socket.SOL_SOCKET, SO_TIMESTAMP, 1)
 
         # Initialize connection with sensor
@@ -154,17 +156,18 @@ class VMD3Driver:
         packet_length = 1500
         while self._receiver_running:
             try:
+                #packet, _ = self._sock_udp.recvfrom(packet_length)
                 packet, ancdata, flags, addr = self._sock_udp.recvmsg(packet_length, 1024)
                 packet_timestamp = time.time() # Fallback timestamp
                 for cmsg_level, cmsg_type, cmsg_data in ancdata:
                     if cmsg_level == socket.SOL_SOCKET and cmsg_type == SO_TIMESTAMP:
                         tv_sec, tv_usec = struct.unpack('ll', cmsg_data)
                         packet_timestamp = tv_sec + tv_usec / 1e6 # Packet receive timestamp
-                        print("PKT Timestamp:", packet_timestamp)
-                #packet, _ = self._sock_udp.recvfrom(packet_length)
 
                 self._udp_queue.put((packet, packet_timestamp))
             except Exception:
+                import traceback
+                traceback.print_exc()
                 continue
 
     def check_send(self, command: bytes):
