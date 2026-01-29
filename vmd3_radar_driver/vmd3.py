@@ -25,6 +25,7 @@ __copyright__ = "Copyright 2025, Labforge Inc."
 import socket
 import math
 import enum
+import time
 from collections import namedtuple
 
 class VMD3Modes(enum.Enum):
@@ -295,12 +296,15 @@ class VMD3Driver:
 
         # GET PDAT DATA ---------------------------------
         packet, _ = self._sock_udp.recvfrom(packet_length)
+        packet_timestamp = time.time()  # Capture timestamp immediately after receiving
         result = self.decode_packet(packet)
         while result is None:  # do while header isn't expected header
             packet, _ = self._sock_udp.recvfrom(packet_length)
+            packet_timestamp = time.time()  # Update timestamp for each new packet
             result = self.decode_packet(packet)
 
-        return result
+        # Return result and timestamp
+        return (*result, packet_timestamp)
 
     def __del__(self):
         # Disconnect from sensor

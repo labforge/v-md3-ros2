@@ -31,7 +31,7 @@ from radar_msgs.msg import RadarReturn, RadarScan
 from rclpy.node import Node
 from sensor_msgs.msg import PointCloud2, PointField
 from std_msgs.msg import Header, Int32, String
-
+from builtin_interfaces.msg import Time as RosTime
 from vmd3_radar_driver.vmd3 import VMD3Driver, VMD3Modes
 
 
@@ -114,9 +114,9 @@ class VMD3RadarNode(Node):
 
             while rclpy.ok() and self._running:
                 try:
-                    data_type, received_data = next(driver)
+                    data_type, received_data, packet_timestamp = next(driver)
                     if data_type in ['PDAT', 'TDAT']:
-                        self.publish_scan(data_type, received_data)
+                        self.publish_scan(data_type, received_data, packet_timestamp)
                     elif data_type == 'DONE':
                         self._frame_counter = received_data
                 except (StopIteration, RuntimeError, OSError) as e:
@@ -124,11 +124,17 @@ class VMD3RadarNode(Node):
                     self.get_logger().error(f'Polling error: {e}')
                     time.sleep(1)
 
-    def publish_scan(self, data_type, received_data):
+    def publish_scan(self, data_type, received_data, packet_timestamp):
         """Publish radar scan and point cloud messages."""
         self.get_logger().info(f"Publishing scan data of type {data_type}")
         radar_scan = RadarScan()
-        radar_scan.header.stamp = self.get_clock().now().to_msg()
+        # Use the packet_timestamp for the header
+        ros_time = self.get_clock().now()
+        if packet_timestamp is not None:
+            secs = int(packet_timestamp)
+            nsecs = int((packet_timestamp - secs) * 1e9)
+            ros_time = rclpy.time.Time(seconds=secs, nanoseconds=nsecs, clock_type=self.get_clock().clock_type)
+        radar_scan.header.stamp = ros_time.to_msg()
         radar_scan.header.frame_id = 'radar_link'
         radar_scan.returns = []
         for det in received_data:
