@@ -30,6 +30,13 @@ from collections import namedtuple
 import threading
 import queue
 
+# Try to get SO_TIMESTAMP from socket, else define manually
+if hasattr(socket, "SO_TIMESTAMP"):
+    SO_TIMESTAMP = socket.SO_TIMESTAMP
+else:
+    # https://www.kernel.org/doc/Documentation/networking/timestamping.txt
+    SO_TIMESTAMP = 29  # Most common value on Linux
+
 class VMD3Modes(enum.Enum):
     """
     Enumeration for V-MD3 operating modes.
@@ -132,7 +139,7 @@ class VMD3Driver:
         self._sock_udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
         local_ip = self._sock_tcp.getsockname()[0]
         self._sock_udp.bind((local_ip, udp_port))
-        self._sock_udp.setsockopt(socket.SOL_SOCKET, socket.SO_TIMESTAMP, 1)
+        self._sock_udp.setsockopt(socket.SOL_SOCKET, SO_TIMESTAMP, 1)
 
         # Initialize connection with sensor
         cmd_frame = self.command("INIT", b'')
@@ -150,7 +157,7 @@ class VMD3Driver:
                 packet, ancdata, flags, addr = self._sock_udp.recvmsg(packet_length, 1024)
                 packet_timestamp = time.time() # Fallback timestamp
                 for cmsg_level, cmsg_type, cmsg_data in ancdata:
-                    if cmsg_level == socket.SOL_SOCKET and cmsg_type == socket.SO_TIMESTAMP:
+                    if cmsg_level == socket.SOL_SOCKET and cmsg_type == SO_TIMESTAMP:
                         tv_sec, tv_usec = struct.unpack('ll', cmsg_data)
                         packet_timestamp = tv_sec + tv_usec / 1e6 # Packet receive timestamp
                         print("PKT Timestamp:", packet_timestamp)
