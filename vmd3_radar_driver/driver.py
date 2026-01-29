@@ -148,10 +148,10 @@ class VMD3RadarNode(Node):
             radar_scan.returns.append(radar_return)
         if data_type == 'TDAT':
             self._target_pub.publish(radar_scan)
-            self._target_pub_pcl.publish(self.create_pointcloud(received_data))
+            self._target_pub_pcl.publish(self.create_pointcloud(received_data, ros_time))
         else:
             self._raw_pub.publish(radar_scan)
-            self._raw_pub_pcl.publish(self.create_pointcloud(received_data))
+            self._raw_pub_pcl.publish(self.create_pointcloud(received_data, ros_time))
         frame_id_msg = Int32()
         frame_id_msg.data = self._frame_counter
         self._frame_id_pub.publish(frame_id_msg)
