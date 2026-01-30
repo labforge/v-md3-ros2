@@ -23,17 +23,17 @@ data rows.
 
 The radar can be configured into the following modes.
 
-| # | Mode                    | Description                                                              |
-|---|-------------------------|--------------------------------------------------------------------------|
-| 0 | 2D, 6m, 10km/h 128/64   | 2D mode, 6m range, 10km/h speed, 128 raw returns, 64 tracked targets     |
-| 1 | 2D, 10m, 10km/h 128/64  | 2D mode, 10m range, 10km/h speed, 128 raw returns, 64 tracked targets    |
-| 2 | 2D, 30m, 30km/h 128/64  | 2D mode, 30m range, 30km/h speed, 128 raw returns, 64 tracked targets    |
-| 3 | 2D, 30m, 50km/h 128/64  | 2D mode, 30m range, 50km/h speed, 128 raw returns, 64 tracked targets    |
-| 4 | 2D, 50m, 50km/h 128/64  | 2D mode, 50m range, 50km/h speed, 128 raw returns, 64 tracked targets    |
-| 5 | 2D, 100m, 100km/h 128/64| 2D mode, 100m range, 1000km/h speed, 128 raw returns, 64 tracked targets |
-| 6 | 3D, 6m, 10km/h 128/64   | 3D mode, 6m range, 10km/h speed, 128 raw returns, 64 tracked targets     |
-| 7 | 3D, 10m, 10km/h 128/64  | 3D mode, 10m range, 10km/h speed, 128 raw returns, 64 tracked targets    |
-| 8 | 3D, 30m, 30km/h 128/64  | 3D mode, 30m range, 30km/h speed, 128 raw returns, 64 tracked targets    |
+| # | Mode                    | Description                                                             |
+|---|-------------------------|-------------------------------------------------------------------------|
+| 0 | 2D, 6m, 10km/h 128/64   | 2D mode, 6m range, 10km/h speed, 128 raw returns, 64 tracked targets    |
+| 1 | 2D, 10m, 10km/h 128/64  | 2D mode, 10m range, 10km/h speed, 128 raw returns, 64 tracked targets   |
+| 2 | 2D, 30m, 30km/h 128/64  | 2D mode, 30m range, 30km/h speed, 128 raw returns, 64 tracked targets   |
+| 3 | 2D, 30m, 50km/h 128/64  | 2D mode, 30m range, 50km/h speed, 128 raw returns, 64 tracked targets   |
+| 4 | 2D, 50m, 50km/h 128/64  | 2D mode, 50m range, 50km/h speed, 128 raw returns, 64 tracked targets   |
+| 5 | 2D, 100m, 100km/h 128/64| 2D mode, 100m range, 100km/h speed, 128 raw returns, 64 tracked targets |
+| 6 | 3D, 6m, 10km/h 128/64   | 3D mode, 6m range, 10km/h speed, 128 raw returns, 64 tracked targets    |
+| 7 | 3D, 10m, 10km/h 128/64  | 3D mode, 10m range, 10km/h speed, 128 raw returns, 64 tracked targets   |
+| 8 | 3D, 30m, 30km/h 128/64  | 3D mode, 30m range, 30km/h speed, 128 raw returns, 64 tracked targets   |
 
 Note for `2D` modes the returned elevation angle is always `0`.
 
