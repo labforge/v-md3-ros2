@@ -46,7 +46,7 @@ def generate_launch_description():
                 {'mode': 6},         # Mode 7 in datasheet (since API is zero indexed, p18)
                 {'stationary': True},
                 {'raw_detections': True},
-                {'target_detections': False}
+                {'target_detections': True}
             ],
         ),
     ])
